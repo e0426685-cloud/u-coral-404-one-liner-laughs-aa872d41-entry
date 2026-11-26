@@ -12,17 +12,24 @@ ENTRY = "I asked my smart speaker for a joke, so it read my search history out l
 OUTPUT_PATH = "/output/entry.txt"
 
 
-def main() -> None:
-    line = ENTRY
+def validate(text: str) -> str:
+    """Check the entry line against the competition rules and return it.
 
-    # Competition rules: exactly one line, 1-200 chars, no surrounding
-    # whitespace, no control characters.
-    assert isinstance(line, str)
-    assert 1 <= len(line) <= 200, f"entry length {len(line)} out of range"
-    assert line == line.strip(), "entry has leading/trailing whitespace"
-    assert "\n" not in line and "\r" not in line, "entry must be a single line"
-    assert all(ord(ch) >= 32 and ord(ch) != 127 for ch in line), \
+    Rules: exactly one line, 1-200 chars, no surrounding whitespace,
+    no control characters.
+    """
+    assert isinstance(text, str), "entry must be a string"
+    assert 1 <= len(text) <= 200, f"entry length {len(text)} out of range"
+    assert text == text.strip(), "entry has leading/trailing whitespace"
+    assert "\n" not in text and "\r" not in text, \
+        "entry must be a single line"
+    assert all(ord(ch) >= 32 and ord(ch) != 127 for ch in text), \
         "entry contains control characters"
+    return text
+
+
+def main() -> None:
+    line = validate(ENTRY)
 
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8", newline="\n") as fh:
